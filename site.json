@@ -1,0 +1,7 @@
+{
+  "brand": "TODO: brand name exactly as printed on the label",
+  "homepage": "https://anyonesdrinks.com",
+  "baseUrl": "https://compliance.anyonesdrinks.com",
+  "defaultLanguage": "en",
+  "languages": ["en", "fr", "de", "it", "es"]
+}

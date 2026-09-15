@@ -1,0 +1,14 @@
+{
+  "name": "anyonesdrinks-compliance",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node build.mjs --strict",
+    "qr": "node qr.mjs",
+    "preview": "node build.mjs && npx --yes serve dist"
+  },
+  "devDependencies": {
+    "qrcode": "^1.5.4"
+  }
+}

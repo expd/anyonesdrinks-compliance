@@ -1,0 +1,28 @@
+{
+  "slug": "hue-gin",
+  "name": "Hue Gin",
+  "gtin": null,
+  "legalName": {
+    "en": "TODO: legal name from Regulation (EU) 2019/787, e.g. Gin, Distilled Gin or London Gin"
+  },
+  "abv": "TODO: alcohol strength as a number, e.g. 40",
+  "volumeCl": "TODO: bottle size in cl as a number, e.g. 70",
+  "eMark": true,
+  "ingredients": {
+    "en": "TODO: optional for spirits. Set \"ingredients\" to null to hide this section"
+  },
+  "allergens": {
+    "en": "TODO: e.g. None. Any allergen must also appear on the physical label"
+  },
+  "energy": null,
+  "packaging": [
+    { "part": "bottle", "code": "TODO: e.g. GL 70 for clear glass" },
+    { "part": "closure", "code": "TODO: e.g. FOR 51 for natural cork" },
+    { "part": "capsule", "code": "TODO: e.g. ALU 41, or delete this entry" }
+  ],
+  "operator": {
+    "name": "TODO: legal company name",
+    "address": ["TODO: street address", "TODO: postcode and city", "TODO: country"],
+    "email": "TODO: contact email"
+  }
+}
