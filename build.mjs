@@ -67,6 +67,7 @@ function validate(p, file, site, i18n) {
   if (p.abv != null && !isTodo(p.abv) && !(Number(p.abv) > 0 && Number(p.abv) < 100)) errors.push('"abv" must be a number between 0 and 100');
   if (p.volumeCl != null && !isTodo(p.volumeCl) && !(Number(p.volumeCl) > 0)) errors.push('"volumeCl" must be a positive number');
   if (p.gtin != null && !validGtin(String(p.gtin))) errors.push('"gtin" is not a valid GTIN (wrong length or check digit)');
+  if (p.operator?.website != null && !isTodo(p.operator.website) && !/^https:\/\/[^\s/]+\.[^\s/]+/.test(p.operator.website)) errors.push('"operator.website" must be a full https:// URL, or remove it');
   if (p.energy != null && !(Number(p.energy.kj) > 0 && Number(p.energy.kcal) > 0)) errors.push('"energy" needs numeric "kj" and "kcal", or set it to null');
   (p.packaging ?? []).forEach((item, i) => {
     if (!i18n.labels[def].parts[item.part]) errors.push(`packaging[${i}].part "${item.part}" is not one of: ${Object.keys(i18n.labels[def].parts).join(', ')}`);
@@ -176,6 +177,7 @@ function renderProduct(p, site, i18n, isDraft, css) {
 
     const op = p.operator;
     const email = isTodo(op.email) ? todoMark(op.email, lang) : `<a href="mailto:${esc(op.email)}">${esc(op.email)}</a>`;
+    const website = op.website == null ? '' : isTodo(op.website) ? `<br>${todoMark(op.website, lang)}` : `<br><a href="${esc(op.website)}">${esc(new URL(op.website).host.replace(/^www\./, ''))}</a>`;
 
     return `<div data-lang="${lang}" lang="${lang}" data-title="${esc(`${p.name} | ${L.pageTitle}${brandText}`)}"${lang === def ? '' : ' hidden'}>
 ${isDraft ? `<p class="draft" role="note">${esc(L.draft)}</p>` : ''}
@@ -189,7 +191,7 @@ ${p.ingredients != null ? `<div class="block"><h2>${esc(L.ingredients)}</h2><p>$
 <div class="block"><h2>${esc(L.allergens)}</h2><p>${t(p.allergens)}</p></div>
 ${p.energy != null ? `<div class="block"><h2>${esc(L.energy)}</h2><p>${num(p.energy.kj, lang)} kJ / ${num(p.energy.kcal, lang)} kcal</p></div>` : ''}
 <div class="block"><h2>${esc(L.packaging)}</h2><ul class="pack">${packaging}</ul><p class="note">${esc(L.checkLocal)}</p></div>
-<div class="block"><h2>${esc(L.operator)}</h2><address>${plain(op.name)}<br>${op.address.map(plain).join('<br>')}<br>${email}</address></div>
+<div class="block"><h2>${esc(L.operator)}</h2><address>${plain(op.name)}<br>${op.address.map(plain).join('<br>')}<br>${email}${website}</address></div>
 <p class="resp">${esc(L.responsible)}</p>
 <p class="foot">${esc(L.privacy)}</p>
 </div>`;

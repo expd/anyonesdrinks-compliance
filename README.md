@@ -42,7 +42,7 @@ notice and the placeholders are highlighted.
 | `allergens` | e.g. `"None"`. Allergens must **also** be on the physical label; the page can't replace it |
 | `energy` | Optional: `{ "kj": 925, "kcal": 222 }`, or `null` to hide |
 | `packaging` | One entry per part. `part` is `bottle`, `closure`, `capsule`, `label` or `box`. `code` is the EU material code, e.g. `GL 70`, `FOR 51`, `ALU 41` (see `src/i18n.json` for the full list) |
-| `operator` | Legal company name, address lines, contact email |
+| `operator` | Legal company name, address lines, contact email, and optional `website` (full `https://` URL, shown as a link) |
 | `gtin` | Leave `null` until you have a GS1 barcode. See below |
 
 Text fields can be a single string or translated:

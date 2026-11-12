@@ -19,6 +19,7 @@
   "operator": {
     "name": "Anyone's Drinks B.V.",
     "address": ["1181 ME Amstelveen", "Noord-Holland", "Netherlands"],
-    "email": "hello@anyonesdrinks.com"
+    "email": "hello@anyonesdrinks.com",
+    "website": "https://thehuegin.com"
   }
 }
