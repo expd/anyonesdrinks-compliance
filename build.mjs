@@ -15,7 +15,10 @@ const STRICT = process.argv.includes('--strict');
 const readJson = async (rel) => JSON.parse(await readFile(path.join(ROOT, rel), 'utf8'));
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const isTodo = (v) => typeof v === 'string' && /^\s*TODO\b/i.test(v);
-const todoMark = (v) => `<mark class="todo">${esc(v)}</mark>`;
+// Placeholders never reach the public page: visitors see a translated "To be confirmed",
+// while the build output lists the internal TODO notes for the team.
+let PENDING = {};
+const todoMark = (v, lang) => `<mark class="todo">${esc(PENDING[lang] ?? PENDING.en ?? 'To be confirmed')}</mark>`;
 const sha256 = (s) => `'sha256-${createHash('sha256').update(s, 'utf8').digest('base64')}'`;
 
 function findTodos(value, trail = '', out = []) {
@@ -38,11 +41,11 @@ function pick(field, lang, fallback) {
 
 function show(value, lang) {
   if (!value) return '';
-  const inner = isTodo(value.text) ? todoMark(value.text) : esc(value.text);
+  const inner = isTodo(value.text) ? todoMark(value.text, lang) : esc(value.text);
   return value.lang !== lang ? `<span lang="${value.lang}">${inner}</span>` : inner;
 }
 
-const num = (n, lang) => (isTodo(n) ? todoMark(n) : new Intl.NumberFormat(lang, { maximumFractionDigits: 1 }).format(Number(n)));
+const num = (n, lang) => (isTodo(n) ? todoMark(n, lang) : new Intl.NumberFormat(lang, { maximumFractionDigits: 1 }).format(Number(n)));
 const normalizeCode = (c) => String(c).toUpperCase().replace(/\s+/g, '').replace(/^([A-Z/]+)(\d+)$/, '$1 $2');
 
 function validGtin(g) {
@@ -146,7 +149,7 @@ ${script ? `<script>${script}</script>\n` : ''}</body>
 
 function renderProduct(p, site, i18n, isDraft, css) {
   const def = site.defaultLanguage;
-  const brand = isTodo(site.brand) ? todoMark(site.brand) : esc(site.brand);
+  const brand = isTodo(site.brand) ? todoMark(site.brand, def) : esc(site.brand);
   const brandText = isTodo(site.brand) ? '' : ` | ${site.brand}`;
 
   const nav = site.languages.length > 1
@@ -160,8 +163,8 @@ function renderProduct(p, site, i18n, isDraft, css) {
     const t = (field) => show(pick(field, lang, def), lang);
     const plain = (v) => show({ text: v, lang }, lang);
 
-    const volume = isTodo(p.volumeCl) ? todoMark(p.volumeCl) : `${num(p.volumeCl, lang)} cl${p.eMark ? ' ℮' : ''}`;
-    const abv = isTodo(p.abv) ? todoMark(p.abv) : `${num(p.abv, lang)} % vol`;
+    const volume = isTodo(p.volumeCl) ? todoMark(p.volumeCl, lang) : `${num(p.volumeCl, lang)} cl${p.eMark ? ' ℮' : ''}`;
+    const abv = isTodo(p.abv) ? todoMark(p.abv, lang) : `${num(p.abv, lang)} % vol`;
 
     const packaging = p.packaging.map((item) => {
       const code = isTodo(item.code) ? null : normalizeCode(item.code);
@@ -172,7 +175,7 @@ function renderProduct(p, site, i18n, isDraft, css) {
     }).join('');
 
     const op = p.operator;
-    const email = isTodo(op.email) ? todoMark(op.email) : `<a href="mailto:${esc(op.email)}">${esc(op.email)}</a>`;
+    const email = isTodo(op.email) ? todoMark(op.email, lang) : `<a href="mailto:${esc(op.email)}">${esc(op.email)}</a>`;
 
     return `<div data-lang="${lang}" lang="${lang}" data-title="${esc(`${p.name} | ${L.pageTitle}${brandText}`)}"${lang === def ? '' : ' hidden'}>
 ${isDraft ? `<p class="draft" role="note">${esc(L.draft)}</p>` : ''}
@@ -204,7 +207,7 @@ ${p.energy != null ? `<div class="block"><h2>${esc(L.energy)}</h2><p>${num(p.ene
 }
 
 function renderIndex(products, site, css) {
-  const brand = isTodo(site.brand) ? todoMark(site.brand) : esc(site.brand);
+  const brand = isTodo(site.brand) ? todoMark(site.brand, 'en') : esc(site.brand);
   const list = products.map((p) => `<li><a href="/${p.slug}/">${esc(p.name)}</a></li>`).join('');
   return shell({
     lang: 'en', title: 'Product information', css, canonical: `${site.baseUrl}/`,
@@ -236,6 +239,7 @@ async function main() {
   const site = await readJson('site.json');
   const i18n = await readJson('src/i18n.json');
   const css = (await readFile(path.join(ROOT, 'src/style.css'), 'utf8')).trim();
+  PENDING = Object.fromEntries(Object.entries(i18n.labels).map(([l, L]) => [l, L.pending]));
 
   const errors = checkTranslations(site, i18n);
   const files = (await readdir(path.join(ROOT, 'products'))).filter((f) => f.endsWith('.json')).sort();

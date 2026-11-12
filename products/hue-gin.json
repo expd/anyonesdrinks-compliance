@@ -1,28 +1,24 @@
 {
   "slug": "hue-gin",
-  "name": "Hue Gin",
-  "gtin": null,
+  "name": "The Hue",
+  "gtin": "08720844117222",
   "legalName": {
-    "en": "TODO: legal name from Regulation (EU) 2019/787, e.g. Gin, Distilled Gin or London Gin"
+    "en": "London Dry Gin"
   },
-  "abv": "TODO: alcohol strength as a number, e.g. 40",
-  "volumeCl": "TODO: bottle size in cl as a number, e.g. 70",
+  "abv": 43,
+  "volumeCl": 70,
   "eMark": true,
-  "ingredients": {
-    "en": "TODO: optional for spirits. Set \"ingredients\" to null to hide this section"
-  },
-  "allergens": {
-    "en": "TODO: e.g. None. Any allergen must also appear on the physical label"
-  },
+  "ingredients": null,
+  "allergens": { "en": "None", "fr": "Aucun", "de": "Keine", "it": "Nessuno", "es": "Ninguno" },
   "energy": null,
   "packaging": [
-    { "part": "bottle", "code": "TODO: e.g. GL 70 for clear glass" },
-    { "part": "closure", "code": "TODO: e.g. FOR 51 for natural cork" },
-    { "part": "capsule", "code": "TODO: e.g. ALU 41, or delete this entry" }
+    { "part": "bottle", "code": "GL 70" },
+    { "part": "closure", "code": "TODO: cork stopper (FOR 51) with a wooden or plastic T-top; confirm with Thames" },
+    { "part": "capsule", "code": "TODO: plastic shrink sleeve; ask the supplier which plastic (e.g. PET 1)" }
   ],
   "operator": {
-    "name": "TODO: legal company name",
-    "address": ["TODO: street address", "TODO: postcode and city", "TODO: country"],
-    "email": "TODO: contact email"
+    "name": "Anyone's Drinks B.V.",
+    "address": ["1181 ME Amstelveen", "Noord-Holland", "Netherlands"],
+    "email": "hello@anyonesdrinks.com"
   }
 }
