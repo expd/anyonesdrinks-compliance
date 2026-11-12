@@ -13,8 +13,14 @@
   "energy": null,
   "packaging": [
     { "part": "bottle", "code": "GL 70" },
-    { "part": "closure", "code": "TODO: cork stopper (FOR 51) with a wooden or plastic T-top; confirm with Thames" },
-    { "part": "capsule", "code": "TODO: plastic shrink sleeve; ask the supplier which plastic (e.g. PET 1)" }
+    { "part": "closure", "code": "FOR 51", "unconfirmed": "T-top material (wood or plastic) not yet confirmed with Thames" },
+    {
+      "part": "capsule",
+      "code": null,
+      "family": "plastic",
+      "material": { "en": "Plastic shrink sleeve", "fr": "Manchon plastique thermorétractable", "de": "Kunststoff-Schrumpfhülse", "it": "Sleeve termoretraibile in plastica", "es": "Funda termorretráctil de plástico" },
+      "unconfirmed": "Plastic type not yet confirmed by the sleeve supplier (e.g. PET 1)"
+    }
   ],
   "operator": {
     "name": "Anyone's Drinks B.V.",

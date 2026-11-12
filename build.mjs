@@ -71,7 +71,11 @@ function validate(p, file, site, i18n) {
   if (p.energy != null && !(Number(p.energy.kj) > 0 && Number(p.energy.kcal) > 0)) errors.push('"energy" needs numeric "kj" and "kcal", or set it to null');
   (p.packaging ?? []).forEach((item, i) => {
     if (!i18n.labels[def].parts[item.part]) errors.push(`packaging[${i}].part "${item.part}" is not one of: ${Object.keys(i18n.labels[def].parts).join(', ')}`);
-    if (!isTodo(item.code) && !i18n.materials[normalizeCode(item.code ?? '')]) errors.push(`packaging[${i}].code "${item.code}" is not listed in src/i18n.json materials`);
+    if (item.code == null) {
+      // No EU code known yet: describe the material in words and name its family so the right bin is shown.
+      if (item.material == null) errors.push(`packaging[${i}] has no "code", so it needs a "material" description`);
+      if (!i18n.labels[def].bins[item.family]) errors.push(`packaging[${i}] has no "code", so "family" must be one of: ${Object.keys(i18n.labels[def].bins).join(', ')}`);
+    } else if (!isTodo(item.code) && !i18n.materials[normalizeCode(item.code)]) errors.push(`packaging[${i}].code "${item.code}" is not listed in src/i18n.json materials`);
   });
   return errors;
 }
@@ -168,10 +172,11 @@ function renderProduct(p, site, i18n, isDraft, css) {
     const abv = isTodo(p.abv) ? todoMark(p.abv, lang) : `${num(p.abv, lang)} % vol`;
 
     const packaging = p.packaging.map((item) => {
-      const code = isTodo(item.code) ? null : normalizeCode(item.code);
+      const code = item.code == null || isTodo(item.code) ? null : normalizeCode(item.code);
       const material = code ? i18n.materials[code] : null;
-      const matHtml = material ? `${esc(material.names[lang])} <code>${esc(code)}</code>` : plain(item.code);
-      const disposal = item.disposal ? t(item.disposal) : material ? esc(L.bins[material.family]) : '';
+      const family = material ? material.family : item.family;
+      const matHtml = material ? `${esc(material.names[lang])} <code>${esc(code)}</code>` : item.code == null ? t(item.material) : plain(item.code);
+      const disposal = item.disposal ? t(item.disposal) : family ? esc(L.bins[family]) : '';
       return `<li><span class="part">${esc(L.parts[item.part])}</span><span class="mat">${matHtml}</span>${disposal ? `<span class="bin">${disposal}</span>` : ''}</li>`;
     }).join('');
 
@@ -281,6 +286,9 @@ async function main() {
   await write('.nojekyll', '');
 
   console.log(`Built ${products.length} product page(s) into dist/: ${products.map((p) => `/${p.slug}/`).join(', ')}`);
+  // "unconfirmed" notes are internal: never rendered, but listed on every build so they don't get forgotten.
+  const unconfirmed = products.flatMap((p) => (p.packaging ?? []).filter((it) => it.unconfirmed).map((it) => `products/${p.slug}.json: ${it.part}: ${it.unconfirmed}`));
+  if (unconfirmed.length) console.warn(`${unconfirmed.length} detail(s) to confirm later (page is live without them):\n  - ${unconfirmed.join('\n  - ')}`);
   if (allTodos.length) {
     const message = `${allTodos.length} placeholder(s) still to fill in (pages show a draft notice):\n  - ${allTodos.join('\n  - ')}`;
     if (STRICT) { console.error(`Strict check failed. ${message}`); process.exit(1); }

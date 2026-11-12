@@ -53,6 +53,14 @@ Text fields can be a single string or translated:
 
 Any language you leave out falls back to English.
 
+If you don't know a part's EU code yet, set `"code": null` and describe it instead. `family` picks the bin
+(`glass`, `paper`, `plastic`, `metal` or `other`). Add an `unconfirmed` note for the team: it's never shown on
+the page, but every build lists it so it doesn't get forgotten:
+
+```json
+{ "part": "capsule", "code": null, "family": "plastic", "material": { "en": "Plastic shrink sleeve" }, "unconfirmed": "Ask supplier which plastic" }
+```
+
 To override the suggested bin for one part, add `disposal`:
 
 ```json
